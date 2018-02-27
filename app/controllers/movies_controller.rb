@@ -10,9 +10,21 @@ class MoviesController < ApplicationController
     # will render app/views/movies/show.<extension> by default
   end
 
+  #def index
+  #  @movies = Movie.all
+  #end
+
   def index
-    @movies = Movie.all
+    if params[:sort] == 'Alph'
+      @movies = Movie.all.order(:title)
+    elsif params[:sort] == 'Date'
+      @movies = Movie.all.order(:release_date)
+    else
+      @movies = Movie.all
+    end
   end
+  
+  
 
   def new
     # default: render 'new' template

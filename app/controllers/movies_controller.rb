@@ -27,14 +27,14 @@ class MoviesController < ApplicationController
       @rating_list = params[:ratings].keys
     end
     
-    @movies = Movie.all
-    
+    @movies =  Movie.all
     @rating_filter = @movies.select {|hash_el| @rating_list.include? hash_el[:rating]}
+    # @rating_filter
     
     if params[:sort] == 'Alph'
-      @movies = @rating_filter.order(:title)
+      @movies = Movie.all.order(:title)
     elsif params[:sort] == 'Date'
-      @movies = @rating_filter.order(:release_date)
+      @movies = Movie.all.order(:release_date)
     else
       @movies = @rating_filter
     end

@@ -10,17 +10,33 @@ class MoviesController < ApplicationController
     # will render app/views/movies/show.<extension> by default
   end
 
+  
+  
+
   #def index
   #  @movies = Movie.all
   #end
 
   def index
-    if params[:sort] == 'Alph'
-      @movies = Movie.all.order(:title)
-    elsif params[:sort] == 'Date'
-      @movies = Movie.all.order(:release_date)
+    
+    @all_ratings = Movie.get_ratings
+    
+    if (params[:ratings] == nil)
+      @rating_list  = @all_ratings  
     else
-      @movies = Movie.all
+      @rating_list = params[:ratings].keys
+    end
+    
+    @movies = Movie.all
+    
+    @rating_filter = @movies.select {|hash_el| @rating_list.include? hash_el[:rating]}
+    
+    if params[:sort] == 'Alph'
+      @movies = @rating_filter.order(:title)
+    elsif params[:sort] == 'Date'
+      @movies = @rating_filter.order(:release_date)
+    else
+      @movies = @rating_filter
     end
   end
   

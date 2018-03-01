@@ -55,7 +55,7 @@ class MoviesController < ApplicationController
     if params[:sort] == 'Alph'
       @movies = @rating_filter.sort_by{|hsh| hsh[:title]} #Movie.all.order(:title)
     elsif params[:sort] == 'Date'
-      @movies = @rating_filter.sort_by{|hsh| hsh[:date]}
+      @movies = @rating_filter.sort_by{|hsh| hsh[:release_date]}
     else
       @movies = @rating_filter
     end

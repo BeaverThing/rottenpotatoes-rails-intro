@@ -21,23 +21,46 @@ class MoviesController < ApplicationController
     
     @all_ratings = Movie.get_ratings
     
-    if (params[:ratings] == nil)
-      @rating_list  = @all_ratings  
+    @redirect = false
+    
+    if (params[:ratings] == nil && session[:ratings] == nil)
+      @rating_list  = @all_ratings
+      session[:ratings] = {"G"=>"1", "PG"=>"1", "PG-13"=>"1", "R"=>"1", "NC-17"=>"1"}
+    elsif (params[:ratings] == nil)
+      @rating_list = session[:ratings].keys
+      @redirect = true
+      #redirect_to movies_path(:ratings => session[:ratings])   # Extract this redirect
+    elsif (params[:ratings] != session[:ratings])
+      @rating_list = params[:ratings].keys
+      session[:ratings] = params[:ratings]
     else
       @rating_list = params[:ratings].keys
     end
     
+    if (params[:sort] != nil && session[:sort] != params[:sort])
+      session[:sort] = params[:sort]
+    elsif(params[:sort] == nil && session[:sort] != nil)
+      @redirect = true #redirect from alph
+    end
+    
+    if(@redirect)
+      flash.keep
+      redirect_to movies_path(:ratings => session[:ratings], :sort => session[:sort])
+    end
+    
+    
     @movies =  Movie.all
     @rating_filter = @movies.select {|hash_el| @rating_list.include? hash_el[:rating]}
-    # @rating_filter
-    
+
     if params[:sort] == 'Alph'
-      @movies = Movie.all.order(:title)
+      @movies = @rating_filter.sort_by{|hsh| hsh[:title]} #Movie.all.order(:title)
     elsif params[:sort] == 'Date'
-      @movies = Movie.all.order(:release_date)
+      @movies = @rating_filter.sort_by{|hsh| hsh[:date]}
     else
       @movies = @rating_filter
     end
+    
+    
   end
   
   
